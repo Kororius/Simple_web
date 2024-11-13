@@ -12,7 +12,7 @@ def home():
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
-def ad_duser():
+def add_user():
     if request.method == 'POST':
         name = request.form['name']
         age = request.form['age']
