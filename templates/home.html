@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Simple Web App!</h1>
+
+        <!-- Filter Form -->
+        <form action="{{ url_for('get_users') }}" method="GET">
+            <input type="text" name="search" placeholder="Search by Name" value="{{ request.args.get('search', '') }}">
+            <input type="number" name="min_age" placeholder="Min Age" value="{{ request.args.get('min_age', '') }}">
+            <input type="number" name="max_age" placeholder="Max Age" value="{{ request.args.get('max_age', '') }}">
+            <button type="submit">Apply Filters</button>
+        </form>
+
+        <a href="{{ url_for('get_users') }}">
+            <button>See All Users</button>
+        </a>
+        <a href="{{ url_for('add_user') }}">
+            <button>Add New User</button>
+        </a>
+    </div>
+</body>
+</html>
