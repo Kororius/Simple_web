@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>List of All Users</h1>
+
+        <!-- Display Users -->
+        <ul>
+            {% if users %}
+                {% for user in users %}
+                    <li>ID: {{ user[0] }}, Name: {{ user[1] }}, Age: {{ user[2] }}</li>
+                {% endfor %}
+            {% else %}
+                <li>No users found</li>
+            {% endif %}
+        </ul>
+
+        <a href="{{ url_for('home') }}">
+            <button>Back to Home</button>
+        </a>
+    </div>
+</body>
+</html>
