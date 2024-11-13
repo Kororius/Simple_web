@@ -2,28 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Users</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 <body>
-    <div class="container">
-        <h1>List of All Users</h1>
+    <h1>All Users</h1>
+    <form method="GET" action="{{ url_for('get_users') }}">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="search">
 
-        <!-- Display Users -->
-        <ul>
-            {% if users %}
-                {% for user in users %}
-                    <li>ID: {{ user[0] }}, Name: {{ user[1] }}, Age: {{ user[2] }}</li>
-                {% endfor %}
-            {% else %}
-                <li>No users found</li>
-            {% endif %}
-        </ul>
+        <label for="min_age">Min Age:</label>
+        <input type="number" id="min_age" name="min_age">
 
-        <a href="{{ url_for('home') }}">
-            <button>Back to Home</button>
-        </a>
-    </div>
+        <label for="max_age">Max Age:</label>
+        <input type="number" id="max_age" name="max_age">
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <ul>
+        {% if users %}
+            {% for user in users %}
+                <li>ID: {{ user[0] }}, Name: {{ user[1] }}, Age: {{ user[2] }}</li>
+            {% endfor %}
+        {% else %}
+            <li>No users found.</li>
+        {% endif %}
+    </ul>
+
+    <a href="{{ url_for('home') }}">
+        <button>Back to Home</button>
+    </a>
 </body>
 </html>

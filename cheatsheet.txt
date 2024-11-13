@@ -1,0 +1,8 @@
+run SonarCube = sonar-scanner
+run pylint = pylint .
+run radon = {
+Cyclomatic complexity: radon cc . -a
+Maintainability index: radon mi .
+Raw Metrics: radon raw .
+Halstead Metrics: radon hal .
+}
