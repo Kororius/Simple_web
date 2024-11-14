@@ -1,0 +1,18 @@
+# Ignore the virtual environment directory
+.venv/
+
+# Ignore other common files
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.env
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Python egg and distribution files
+*.egg
+git *.egg-info/
+dist/
+build/

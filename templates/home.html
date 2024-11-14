@@ -18,12 +18,24 @@
             <button type="submit">Apply Filters</button>
         </form>
 
-        <a href="{{ url_for('get_users') }}">
-            <button>See All Users</button>
-        </a>
-        <a href="{{ url_for('add_user') }}">
-            <button>Add New User</button>
-        </a>
+        <!-- Links to all functionalities -->
+        <div class="buttons">
+            <a href="{{ url_for('get_users') }}">
+                <button>See All Users</button>
+            </a>
+            <a href="{{ url_for('add_user') }}">
+                <button>Add New User</button>
+            </a>
+            <a href="{{ url_for('add_department_route') }}">
+                <button>Add New Department</button>
+            </a>
+            <a href="{{ url_for('add_employee_route') }}">
+                <button>Add New Employee</button>
+            </a>
+            <a href="{{ url_for('list_employees') }}">
+                <button>View All Employees</button>
+            </a>
+        </div>
     </div>
 </body>
 </html>

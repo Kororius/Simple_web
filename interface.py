@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
-import sqlite3
-from database import init_db, add_usr, get_users_by_name_and_age, DATABASE  # Ensure all necessary functions are imported
+from database import init_db, add_usr, get_users_by_name_and_age, add_department, add_employee, get_all_departments, \
+    get_employees_by_department, get_all_employees
 
 app = Flask(__name__)
 init_db()
@@ -14,54 +14,54 @@ def add_user():
     if request.method == 'POST':
         name = request.form['name']
         age = request.form['age']
-        # Removed the city field
-        add_usr(name, age)  # Now only passing name and age to the add_usr function
-        return redirect(url_for('home'))  # Redirect to the home page after form submission
+        add_usr(name, age)
+        return redirect(url_for('home'))
     return render_template('add_user.html')
 
 @app.route('/get_users', methods=['GET'])
 def get_users():
-    search_query = request.args.get('search', '')  # Get the search query
-    min_age = request.args.get('min_age', '')  # Get the minimum age filter
-    max_age = request.args.get('max_age', '')  # Get the maximum age filter
-
-    # Call the function that applies the filters
+    search_query = request.args.get('search', '')
+    min_age = request.args.get('min_age', '')
+    max_age = request.args.get('max_age', '')
     users = get_users_by_name_and_age(search_query, min_age, max_age)
-
     return render_template('users_list.html', users=users)
 
-def get_users_by_name_and_age(name_query, min_age, max_age):
-    # Use an empty string if name_query is None
-    if name_query is None:
-        name_query = ''
+@app.route('/add_department', methods=['GET', 'POST'])
+def add_department_route():
+    if request.method == 'POST':
+        name = request.form['name']
+        add_department(name)
+        return redirect(url_for('home'))
+    return render_template('add_department.html')
 
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
+@app.route('/add_employee', methods=['GET', 'POST'])
+def add_employee_route():
+    if request.method == 'POST':
+        name = request.form['name']
+        age = request.form['age']
+        department_id = request.form['department_id']
+        add_employee(name, age, department_id)
+        # After adding the employee, redirect to the list of employees
+        return redirect(url_for('list_employees', department_id=department_id))
 
-    # Build the query dynamically based on provided filters
-    query = "SELECT * FROM users WHERE name LIKE ?"
-    params = ['%' + name_query + '%']  # Safe concatenation since name_query is never None
+    departments = get_all_departments()
+    return render_template('add_employee.html', departments=departments)
 
-    if min_age:
-        query += " AND age >= ?"
-        params.append(int(min_age))  # Ensure min_age is cast to int
 
-    if max_age:
-        query += " AND age <= ?"
-        params.append(int(max_age))  # Ensure max_age is cast to int
+@app.route('/employees', methods=['GET'])
+@app.route('/employees', methods=['GET'])
+def list_employees():
+    department_id = request.args.get('department_id')
 
-    cursor.execute(query, tuple(params))
-    users = cursor.fetchall()
-    conn.close()
-    return users
+    # If no department is selected, show all employees
+    if department_id:
+        employees = get_employees_by_department(department_id)
+    else:
+        # If no department_id is provided, fetch all employees
+        employees = get_all_employees()  # You should implement this method to fetch all employees
 
-# The add_usr function now only takes name and age as parameters
-def add_usr(name, age):
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO users (name, age) VALUES (?, ?)", (name, age))
-    conn.commit()
-    conn.close()
+    departments = get_all_departments()
+    return render_template('employees_list.html', employees=employees, departments=departments)
 
 if __name__ == '__main__':
     app.run(debug=True)
