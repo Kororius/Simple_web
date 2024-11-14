@@ -2,5 +2,5 @@ projectKey=simple_web_app
 serverUrl=http://localhost:9000
 serverVersion=10.7.0.96327
 dashboardUrl=http://localhost:9000/dashboard?id=simple_web_app
-ceTaskId=29072087-966c-4ac9-9dd2-da3f6f42dc72
-ceTaskUrl=http://localhost:9000/api/ce/task?id=29072087-966c-4ac9-9dd2-da3f6f42dc72
+ceTaskId=9ff8fe40-6481-4013-b99f-45c7a742d5ad
+ceTaskUrl=http://localhost:9000/api/ce/task?id=9ff8fe40-6481-4013-b99f-45c7a742d5ad

@@ -7,5 +7,6 @@ Raw Metrics: radon raw .
 Halstead Metrics: radon hal .
 }
 
+Kad paleisti unit testus irasyk: python -m unittest discover
 
 P.S. vietoj . galima naudot failo pavadinima, funkcijos pavadinima ir t.t.
