@@ -1,3 +1,9 @@
+"""
+This module defines the Flask application for managing users, departments, and employees.
+It includes routes for adding and retrieving data from the database.
+"""
+import sqlite3
+
 from flask import Flask, request, render_template, redirect, url_for
 from database import init_db, add_usr, get_users_by_name_and_age, add_department, add_employee, get_all_departments, \
     get_employees_by_department, get_all_employees
@@ -7,10 +13,22 @@ init_db()
 
 @app.route('/')
 def home():
+    """
+    Render the home page of the application.
+
+    Returns:
+        str: The HTML content for the home page.
+    """
     return render_template('home.html')
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
+    """
+    Add a new user to the database via a form submission.
+
+    Returns:
+        str: Redirects to the home page on successful form submission or renders the form.
+    """
     if request.method == 'POST':
         name = request.form['name']
         age = request.form['age']
@@ -20,6 +38,12 @@ def add_user():
 
 @app.route('/get_users', methods=['GET'])
 def get_users():
+    """
+    Retrieve and display users filtered by search query and age range.
+
+    Returns:
+        str: The HTML content displaying the filtered user list.
+    """
     search_query = request.args.get('search', '')
     min_age = request.args.get('min_age', '')
     max_age = request.args.get('max_age', '')
@@ -28,6 +52,12 @@ def get_users():
 
 @app.route('/add_department', methods=['GET', 'POST'])
 def add_department_route():
+    """
+    Add a new department to the database via a form submission.
+
+    Returns:
+        str: Redirects to the home page on successful form submission or renders the form.
+    """
     if request.method == 'POST':
         name = request.form['name']
         add_department(name)
@@ -36,24 +66,32 @@ def add_department_route():
 
 @app.route('/add_employee', methods=['GET', 'POST'])
 def add_employee_route():
+    """
+    Add a new employee to the database via a form submission.
+    Associates the employee with a department.
+
+    Returns:
+        str: Redirects to the employee list page or renders the form.
+    """
     if request.method == 'POST':
         name = request.form['name']
         age = request.form['age']
         department_id = request.form['department_id']
         add_employee(name, age, department_id)
-        # After adding the employee, redirect to the list of employees
         return redirect(url_for('list_employees', department_id=department_id))
 
     departments = get_all_departments()
     return render_template('add_employee.html', departments=departments)
 
-
-@app.route('/employees', methods=['GET'])
 @app.route('/employees', methods=['GET'])
 def list_employees():
-    department_id = request.args.get('department_id')
+    """
+    Display a list of employees filtered by department.
 
-    # If no department is selected, show all employees
+    Returns:
+        str: The HTML content displaying the employee list and departments.
+    """
+    department_id = request.args.get('department_id')
     if department_id:
         employees = get_employees_by_department(department_id)
     else:
