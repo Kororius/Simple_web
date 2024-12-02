@@ -1,67 +1,97 @@
 from flask import Flask, request, render_template, redirect, url_for
-from database import init_db, add_usr, get_users_by_name_and_age, add_department, add_employee, get_all_departments, \
-    get_employees_by_department, get_all_employees
+from database import init_db, add_usr, get_users_by_name_and_age, add_department, add_employee, \
+    get_all_departments, get_employees_by_department, get_all_employees
 
 app = Flask(__name__)
 init_db()
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+def handle_all_requests():
+    action = request.args.get('action', 'home')
+    method = request.method
+    form_data = request.form
+    args = request.args
 
-@app.route('/add_user', methods=['GET', 'POST'])
-def add_user():
-    if request.method == 'POST':
-        name = request.form['name']
-        age = request.form['age']
-        add_usr(name, age)
-        return redirect(url_for('home'))
-    return render_template('add_user.html')
+    if action == 'home':
+        return render_template('home.html')
 
-@app.route('/get_users', methods=['GET'])
-def get_users():
-    search_query = request.args.get('search', '')
-    min_age = request.args.get('min_age', '')
-    max_age = request.args.get('max_age', '')
-    users = get_users_by_name_and_age(search_query, min_age, max_age)
-    return render_template('users_list.html', users=users)
+    elif action == 'add_user':
+        if method == 'POST':
+            name = form_data['name']
+            age = form_data['age']
+            add_usr(name, age)
+            return redirect(url_for('handle_all_requests', action='home'))
+        return render_template('add_user.html')
 
-@app.route('/add_department', methods=['GET', 'POST'])
-def add_department_route():
-    if request.method == 'POST':
-        name = request.form['name']
-        add_department(name)
-        return redirect(url_for('home'))
-    return render_template('add_department.html')
+    elif action == 'get_users':
+        search_query = args.get('search', '')
+        min_age = args.get('min_age', '')
+        max_age = args.get('max_age', '')
+        users = get_users_by_name_and_age(search_query, min_age, max_age)
+        departments = get_all_departments()
+        return render_template('users_list.html', users=users, departments=departments)
 
-@app.route('/add_employee', methods=['GET', 'POST'])
-def add_employee_route():
-    if request.method == 'POST':
-        name = request.form['name']
-        age = request.form['age']
-        department_id = request.form['department_id']
-        add_employee(name, age, department_id)
-        # After adding the employee, redirect to the list of employees
-        return redirect(url_for('list_employees', department_id=department_id))
+    elif action == 'add_department':
+        if method == 'POST':
+            name = form_data['name']
+            add_department(name)
+            return redirect(url_for('handle_all_requests', action='home'))
+        return render_template('add_department.html')
 
-    departments = get_all_departments()
-    return render_template('add_employee.html', departments=departments)
+    elif action == 'add_employee':
+        if method == 'POST':
+            name = form_data['name']
+            age = form_data['age']
+            department_id = form_data['department_id']
+            add_employee(name, age, department_id)
+            return redirect(url_for('handle_all_requests', action='list_employees', department_id=department_id))
+        departments = get_all_departments()
+        return render_template('add_employee.html', departments=departments)
+
+    elif action == 'list_employees':
+        department_id = args.get('department_id')
+        if department_id:
+            employees = get_employees_by_department(department_id)
+        else:
+            employees = get_all_employees()
+        return render_template('employees_list.html', employees=employees, departments=get_all_departments())
+
+    return "Invalid action"
 
 
-@app.route('/employees', methods=['GET'])
-@app.route('/employees', methods=['GET'])
-def list_employees():
-    department_id = request.args.get('department_id')
+def handle_post_requests():
+    method = request.method
+    form_data = request.form
+    args = request.args
 
-    # If no department is selected, show all employees
-    if department_id:
-        employees = get_employees_by_department(department_id)
-    else:
-        # If no department_id is provided, fetch all employees
-        employees = get_all_employees()  # You should implement this method to fetch all employees
+    if method == 'POST':
+        action = args.get('action', 'add_user')
 
-    departments = get_all_departments()
-    return render_template('employees_list.html', employees=employees, departments=departments)
+        if action == 'add_user':
+            name = form_data['name']
+            age = form_data['age']
+            add_usr(name, age)
+            return redirect(url_for('handle_post_requests', action='home'))
+
+        elif action == 'add_department':
+            name = form_data['name']
+            add_department(name)
+            return redirect(url_for('handle_post_requests', action='home'))
+
+        elif action == 'add_employee':
+            name = form_data['name']
+            age = form_data['age']
+            department_id = form_data['department_id']
+            add_employee(name, age, department_id)
+            return redirect(url_for('handle_post_requests', action='list_employees', department_id=department_id))
+
+    return render_template('add_user.html')  
+
+@app.route('/process', methods=['GET', 'POST'])
+def process_request():
+    if request.method == 'GET':
+        return handle_all_requests()
+    elif request.method == 'POST':
+        return handle_post_requests()
 
 if __name__ == '__main__':
     app.run(debug=True)
